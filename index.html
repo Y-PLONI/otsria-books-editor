@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <title>עריכת ספר לאוצריא</title>
+  <meta charset="UTF-8">
+  <title>עורך הספרים לאוצריא</title>
   <style>
     /* איפוס ועיצוב בסיסי */
     * {
@@ -13,48 +13,50 @@
       padding: 0;
       height: 100%;
       width: 100%;
-      /* שינוי הגופן - עדיפות Segoe UI, fallback ל-Arial */
-      font-family: "Segoe UI", Arial, sans-serif;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f2f2f2;
     }
 
-    /* תפריט עליון (Fixed) - בגובה יחסי, למשל 3rem */
+    /* תפריט עליון (fixed), כך שתמיד יהיה מעל (לא יגלול יחד עם הטקסט). 
+       גובה: 50px */
     .top-bar {
       position: fixed;
-      top: 0; right: 0; left: 0;
-      height: 3rem; /* יחידה יחסית במקום px */
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 50px;
       background: #1976d2;
       color: #fff;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.2);
+      justify-content: space-between; /* שמאל/ימין */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       z-index: 9999;
-      padding: 0 0.5rem; /* קצת רווח אופקי */
+      padding: 0 8px;
     }
-
-    /* בלוק שמאלי (טען קובץ) */
-    .top-bar-left {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-left: 0.5rem;
-    }
-    /* בלוק אמצעי (כפתורי עיצוב) */
+    /* בלוק אמצעי - כפתורי עיצוב */
     .top-bar-middle {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      margin-left: 0.5rem;
-      margin-right: 0.5rem;
+      gap: 8px;
+      margin-left: 8px;
+      margin-right: 8px;
     }
-    /* בלוק ימני (שם קובץ, רענן, שמירה) */
+    /* בלוק שמאלי - כפתור טעינת קובץ */
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 8px;
+      margin-right: 8px;
+    }      
+    /* בלוק ימני - כפתור שם קובץ, רענן, שמירה */
     .top-bar-right {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      margin-right: 0.5rem;
-      margin-left: 0.5rem;
+      gap: 8px;
+      margin-right: 8px;
+      margin-left: 8px;
     }
 
     /* כפתורים */
@@ -64,15 +66,14 @@
       align-items: center;
       justify-content: center;
       border: none;
-      border-radius: 1rem;
-      padding: 0.4rem 0.8rem;
+      border-radius: 16px;
+      padding: 6px 12px;
       background: #1565c0;
       color: #fff;
       cursor: pointer;
       font-size: 0.9rem;
       transition: background 0.3s ease;
       text-decoration: none;
-      white-space: nowrap;
     }
     button:hover,
     .file-label:hover {
@@ -81,7 +82,7 @@
 
     /* כפתורים מיוחדים */
     .save-button {
-      background: #388e3c; /* ירוק */
+      background: #388e3c; /* ירוק Material */
     }
     .save-button:hover {
       background: #2e7d32;
@@ -97,11 +98,7 @@
     .file-name-display {
       font-weight: bold;
       color: #ffeb3b; /* צהבהב */
-      margin-left: 0.3rem;
-      max-width: 8rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      margin-left: 4px;
     }
 
     /* מסתירים input[type=file], מציגים רק label */
@@ -109,30 +106,34 @@
       display: none;
     }
 
-    /* חלונית כותרות מימין (Fixed), עם אפשרות גרירה (resize) */
+    /* חלונית כותרות בצד ימין (fixed) - לא תזוז בגלילה */
     .side-panel {
       position: fixed;
-      top: 3rem;   /* מתחת ל-top-bar שגובהו 3rem */
+      top: 65px;   /* מתחת ל-top-bar */
+      right: 0;
       bottom: 0;
-      /* width: 220px; <- מחליפים ברוחב יחסי, ואפשרות גרירה */
-      width: 20vw; /* שימוש ביחידה יחסית לרוחב המסך */
-      min-width: 10rem;   /* מגבלה מינימלית */
-      max-width: 40vw;    /* מגבלה מקסימלית */
+      width: 220px;
       background: #fff;
-      box-shadow: -0.125rem 0 0.25rem rgba(0,0,0,0.1);
-      padding: 0.8rem;
-      z-index: 10;
+      box-shadow: -2px 0 4px rgba(0,0,0,0.1);
       overflow-y: auto;
-      /* כדי לאפשר למשתמש לגרור:
-         1) resize: horizontal
-         2) overflow: auto (יש כבר overflow-y:auto, נשים overflow:auto לציר X גם)
-      */
-      resize: horizontal;
-      overflow-x: auto;
+      padding: 16px;
+      z-index: 10;
+      direction: rtl; /* שמירה על כיוון שמאל לימין עבור התוכן */
+    }
+    .side-panel::-webkit-scrollbar {
+      width: 8px; /* רוחב פס הגלילה */
+      direction: rtl; /* כיוון פס הגלילה */
+    }
+    .side-panel::-webkit-scrollbar-thumb {
+      background-color: #b6b4b4; /* צבע הפס */
+      border-radius: 4px;
+    }
+    .side-panel::-webkit-scrollbar-thumb:hover {
+      background-color: #555; /* צבע הפס כשעוברים מעליו */
     }
     .side-panel h2 {
       font-size: 1rem;
-      margin: 0.5rem 0;
+      margin: 8px 0;
     }
     .outline-list {
       list-style-type: none;
@@ -140,7 +141,7 @@
       padding: 0;
     }
     .outline-list li {
-      margin-bottom: 0.4rem;
+      margin-bottom: 6px;
       cursor: pointer;
       color: #1976d2;
       word-wrap: break-word;
@@ -149,63 +150,57 @@
       text-decoration: underline;
     }
 
-    /* אזור תוכן (Fixed) עם גלילה עצמאית (לגובה).
-       - top: 3rem (גובה ה-toolbar)
-       - right: side-panel variable (20vw)
-    */
+    /* אזור התוכן (Scrollable) -
+       נקבע כ-FIXED כך שהטקסט יגלול בתוכו באופן עצמאי,
+       בעוד ה-top-bar וה-side-panel נשארים מעליו. */
     .main-container {
       position: fixed;
-      top: 3rem; 
+      top: 50px;       /* מתחת ל-toolbar */
       left: 0;
-      right: 20vw;  /* side-panel width in vw */
+      right: 220px;    /* כדי לא להתנגש ב-side-panel */
       bottom: 0;
-      overflow-y: auto;
+      overflow-y: auto; /* גלילה עצמאית לתוכן */
+      /* רקע מסוים */
       background: #f2f2f2;
     }
 
-    /* עורך הטקסט בתוך המכולה הגלילה */
+    /* במסגרת התוכן הגולל הזה, נשים editor-container וכו' */
     .editor-container {
-      margin: 1rem;
+      margin: 16px;
       background: #fff;
-      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.1);
-      border-radius: 0.4rem;
-      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 6px;
+      padding: 16px;
       min-height: 80vh;
+      direction: ltr;   /* scrollbar מימין */
     }
 
-    /* במקום pre-wrap -> normal (או pre-line),
-       כדי למנוע "רווחים מוזרים" בדפדפן.
-       אם הטקסט כולל \n בקובץ, הם לא יוצגו כ"שורות חדשות" אוטומטיות.
-       במקום זאת, נשתמש ב-execCommand("insertLineBreak") ב-Enter 
-       ונמיר בחזרה ל-\n בשמירה (prettify).
-    */
     #editor {
       min-height: 70vh;
       outline: none;
       cursor: text;
       width: 100%;
-      direction: rtl;
+      direction: rtl;   /* כתיבה מימין לשמאל */
       text-align: right;
-      white-space: normal;
+      white-space: pre-wrap; /* \n => ירידת שורה */
     }
-
-    /* מניעה של מרווחים סביב כותרות */
+    /* מניעת מרווחים סביב כותרות */
     #editor h1, #editor h2, #editor h3, #editor h4, #editor h5, #editor h6 {
-      margin: 0;
+      margin: 0; 
       padding: 0;
     }
   </style>
 </head>
 <body>
 
-<!-- תפריט עליון -->
+<!-- תפריט עליון (Fixed) -->
 <div class="top-bar">
-  <!-- צד שמאל: טען קובץ -->
+  <!-- צד שמאל: כפתורי עיצוב -->
   <div class="top-bar-left">
     <label class="file-label" for="fileInput">טען קובץ</label>
-  </div>
+  </div>  
 
-  <!-- אמצע: כפתורי עיצוב -->
+  <!-- צד אמצע: כפתורי עיצוב -->
   <div class="top-bar-middle">
     <button onclick="toggleHeading(1)">H1</button>
     <button onclick="toggleHeading(2)">H2</button>
@@ -213,140 +208,234 @@
     <button onclick="toggleHeading(4)">H4</button>
     <button onclick="toggleHeading(5)">H5</button>
     <button onclick="toggleHeading(6)">H6</button>
-    <button onclick="toggleSize('b')">הדגש</button>
-    <button onclick="toggleSize('i')">נטוי</button>
-    <button onclick="toggleSize('big')">גדול</button>
-    <button onclick="toggleSize('small')">קטן</button>
+    <button onclick="toggleBold()">הדגש</button>
+    <button onclick="toggleItalic()">נטוי</button>
+    <button onclick="toggleBig()">גדול</button>
+    <button onclick="toggleSmall()">קטן</button>
   </div>
 
-  <!-- ימין: שם קובץ, רענן, שמירה -->
+  <!-- צד ימין: טעינת קובץ, שם קובץ, רענן, שמירה -->
   <div class="top-bar-right">
     <input type="file" id="fileInput" accept=".txt,.html" />
     <span id="fileNameSpan" class="file-name-display"></span>
+
     <button class="refresh-button" onclick="refreshEditor()">רענן טקסט</button>
     <button class="save-button" onclick="saveFile()">שמירה</button>
   </div>
 </div>
 
-<!-- חלונית כותרות מימין, ניתנת לגרירה (resize) -->
+<!-- חלונית כותרות בצד ימין (Fixed) -->
 <div class="side-panel">
   <h2>כותרות במסמך</h2>
   <ul class="outline-list" id="outlineList"></ul>
 </div>
 
-<!-- אזור התוכן הנגלל עצמאי -->
+<!-- אזור התוכן, גולל באופן עצמאי (Fixed) -->
 <div class="main-container">
   <div class="editor-container">
-    <div
-      id="editor"
+    <div 
+      id="editor" 
       contenteditable="true"
+      onkeydown="handleEnter(event)"
     >
-      <p>הכנס/י טקסט כאן...</p>
+      <p>טען קובץ והתחל לערוך אותו!</p>
     </div>
   </div>
 </div>
 
 <script>
-/** משתנים גלובליים */
+/**
+ * משתנים גלובליים
+ */
 let originalContent = "";
 let lastLoadedFile = null;
 let lastLoadedFileName = "";
 
-/**
- * 1) טיפול בלחיצת Enter כדי לא להכניס <div> או <p>,
- *    אלא insertLineBreak (שייצור <br> בדרך כלל),
- *    שאח"כ נמיר בחזרה ל-\n בשמירה.
- */
-document.getElementById("editor").addEventListener("keydown", function(e) {
+/** 1) מניעת <div> או <br> ב-Enter: רק \n */
+function handleEnter(e) {
   if (e.key === "Enter") {
     e.preventDefault();
-    document.execCommand("insertLineBreak");
-    updateOutline(); // במידה וזה משפיע על כותרת כלשהי
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+
+    const newLine = document.createTextNode("\n");
+    range.insertNode(newLine);
+    range.setStartAfter(newLine);
+    range.setEndAfter(newLine);
+
+    sel.removeAllRanges();
+    sel.addRange(range);
   }
-});
+}
 
-/* 2) מעקב אחר שינויי DOM בכל רגע - לאגד את חלונית הכותרות בזמן אמת */
-const editor = document.getElementById("editor");
-const observer = new MutationObserver(() => {
-  updateOutline();
-});
-observer.observe(editor, { childList: true, subtree: true, characterData: true });
+/** 2) הדגשה/ נטוי/ גדול/ קטן - בלי מצבי כפילות */
+function toggleBold()   { toggleSize('b');   updateOutline(); }
+function toggleItalic() { toggleSize('i');   updateOutline(); }
+function toggleBig()    { toggleSize('big'); updateOutline(); }
+function toggleSmall()  { toggleSize('small'); updateOutline(); }
 
-/** 3) toggleHeading(level): עוטף/מסיר <hX> סביב הטקסט הנבחר */
+/**
+ * 3) לוגיקה כללית לכל תגי b,i,big,small:
+ *    - אם יש כבר (b,i,big,small) => הסר הכל.
+ *    - אחרת עוטפים ב-tagRequested.
+ *    - בעת הייצוא נמחק גם צמדים <big><small> וכו' או ריקים.
+ *    - ביטול הדגשה חלקי => נטפל ע"י פיצול טקסט בהמשך (אם תרצה).
+ */
+function toggleSize(tagRequested) {
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+
+  removeSelectionSpaces(sel); // לא עוטף רווחים
+
+  const range = sel.getRangeAt(0);
+  const htmlBefore = getRangeHTML(range);
+
+  // מזהים אם כבר יש tagRequested, או תגים אחרים
+  const hasTag = new RegExp(`<${tagRequested}[^>]*>`,'i').test(htmlBefore);
+  const hasAnyTag = /<(?:b|i|big|small)\b[^>]*>/i.test(htmlBefore);
+
+  // שליפה
+  const extracted = range.extractContents();
+  const container = document.createElement("div");
+  container.appendChild(extracted);
+  let inner = container.innerHTML;
+
+  // הסרה מוחלטת של b,i,big,small
+  inner = removeAllSizeTags(inner);
+
+  // אם כבר היה tag כלשהו => ביטלנו, לא מוסיפים.
+  // אם לא היה => נוסיף tagRequested
+  if (!hasAnyTag) {
+    inner = `<${tagRequested}>${inner}</${tagRequested}>`;
+  }
+
+  // החזרה למסמך
+  const newFrag = document.createRange().createContextualFragment(inner);
+  range.insertNode(newFrag);
+
+  // מקמים את הסמן אחרי
+  const selRange = document.createRange();
+  selRange.setStartAfter(newFrag);
+  selRange.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(selRange);
+}
+
+/** 4) הסרת כל <b>/<i>/<big>/<small> ממחרוזת */
+function removeAllSizeTags(html) {
+  return html
+    .replace(/<\s*(?:b|i|big|small)\s*>/gi, "")
+    .replace(/<\s*\/\s*(?:b|i|big|small)\s*>/gi, "");
+}
+
+/** קריאת ה-HTML מתוך ה-Range */
+function getRangeHTML(range) {
+  const tempDiv = document.createElement("div");
+  tempDiv.appendChild(range.cloneContents());
+  return tempDiv.innerHTML;
+}
+
+/** הסרת רווחים מובילים/סוגרים מהבחירה (שלא ייכנסו לתג) */
+function removeSelectionSpaces(sel) {
+  if (!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  trimSelectionStart(range, sel);
+  trimSelectionEnd(range, sel);
+}
+function trimSelectionStart(range, sel) {
+  const startNode = range.startContainer;
+  const offset = range.startOffset;
+  if (startNode.nodeType === Node.TEXT_NODE) {
+    const textVal = startNode.nodeValue;
+    let i = offset;
+    while (i < textVal.length && textVal[i] === " ") i++;
+    if (i > offset) {
+      range.setStart(startNode, i);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+}
+function trimSelectionEnd(range, sel) {
+  const endNode = range.endContainer;
+  let offset = range.endOffset;
+  if (endNode.nodeType === Node.TEXT_NODE) {
+    const textVal = endNode.nodeValue;
+    let i = offset - 1;
+    while (i >= 0 && textVal[i] === " ") i--;
+    const newEnd = i + 1;
+    if (newEnd < offset) {
+      range.setEnd(endNode, newEnd);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+}
+
+/** 5) כותרות: מוסיף \n לפני (אם חסר). אם כבר עטוף => מסיר */
 function toggleHeading(level) {
   const sel = window.getSelection();
   if (!sel.rangeCount) return;
   const range = sel.getRangeAt(0);
 
-  const extracted = range.extractContents();
-  const tempDiv = document.createElement("div");
-  tempDiv.appendChild(extracted);
-  let inner = tempDiv.innerHTML.trim();
+  const extracted = range.collapsed ? null : range.extractContents();
+  const container = document.createElement('div');
+  if (extracted) container.appendChild(extracted);
 
+  let inner = container.innerHTML.trim();
   const openTag = `<h${level}>`;
   const closeTag = `</h${level}>`;
 
+  addNewlineBefore(range);
+
+  // אם כבר עטוף => הסר
   if (inner.startsWith(openTag) && inner.endsWith(closeTag)) {
-    // הסרה
     inner = inner.slice(openTag.length, inner.length - closeTag.length);
+    const frag = document.createRange().createContextualFragment(inner);
+    range.insertNode(frag);
   } else {
-    // עטוף
-    inner = `<h${level}>${inner}</h${level}>`;
+    // אחרת עוטפים
+    const headingElem = document.createElement(`h${level}`);
+    headingElem.innerHTML = inner;
+    range.insertNode(headingElem);
   }
 
-  range.deleteContents();
-  const newFrag = document.createRange().createContextualFragment(inner);
-  range.insertNode(newFrag);
-
-  // סמן אחרי
-  const afterRange = document.createRange();
-  afterRange.setStartAfter(newFrag);
-  afterRange.collapse(true);
+  range.setStartAfter(range.endContainer);
+  range.setEndAfter(range.endContainer);
   sel.removeAllRanges();
-  sel.addRange(afterRange);
+  sel.addRange(range);
+
+  updateOutline();
 }
 
-/** 4) toggleSize(tagRequested): b/i/big/small */
-function toggleSize(tagRequested) {
-  const sel = window.getSelection();
-  if (!sel.rangeCount) return;
-  const range = sel.getRangeAt(0);
-
-  const extracted = range.extractContents();
-  const tempDiv = document.createElement("div");
-  tempDiv.appendChild(extracted);
-  let inner = tempDiv.innerHTML;
-
-  // הסרת כל b,i,big,small
-  inner = removeAllSizeTags(inner);
-
-  // היה כבר tag? => ביטול. אחרת => מוסיפים
-  const hadAnyTag = /<(?:b|i|big|small)\b[^>]*>/i.test(inner);
-  if (!hadAnyTag) {
-    inner = `<${tagRequested}>${inner}</${tagRequested}>`;
+/** מוסיף \n לפני הכותרת, אם אין */
+function addNewlineBefore(range) {
+  const textNode = range.startContainer;
+  if (textNode && textNode.nodeType === 3) {
+    if (!textNode.nodeValue.endsWith("\n")) {
+      const newLine = document.createTextNode("\n");
+      range.insertNode(newLine);
+      range.setStartAfter(newLine);
+      range.setEndAfter(newLine);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  } else {
+    const newLine = document.createTextNode("\n");
+    range.insertNode(newLine);
+    range.setStartAfter(newLine);
+    range.setEndAfter(newLine);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
   }
-
-  range.deleteContents();
-  const newFrag = document.createRange().createContextualFragment(inner);
-  range.insertNode(newFrag);
-
-  // סמן אחרי
-  const afterRange = document.createRange();
-  afterRange.setStartAfter(newFrag);
-  afterRange.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(afterRange);
 }
 
-/** 5) הסרת b,i,big,small ממחרוזת */
-function removeAllSizeTags(html) {
-  return html
-    .replace(/<\s*(?:b|i|big|small)[^>]*>/gi, "")
-    .replace(/<\s*\/\s*(?:b|i|big|small)\s*>/gi, "");
-}
-
-/** 6) עדכון חלונית כותרות */
+/** 6) עדכון חלונית כותרות (צד ימין) */
 function updateOutline() {
+  const editor = document.getElementById("editor");
   const outlineList = document.getElementById("outlineList");
   outlineList.innerHTML = "";
 
@@ -357,7 +446,9 @@ function updateOutline() {
     li.textContent = headingText;
 
     const level = parseInt(heading.tagName.substring(1), 10);
-    li.style.marginRight = (level - 1) * 1.25 + "rem"; // לדוגמה, במקום 20px -> 1.25rem
+    const indent = (level - 1) * 20;
+    li.style.marginRight = indent + "px";
+
     li.onclick = () => {
       heading.scrollIntoView({ behavior: "smooth", block: "start" });
     };
@@ -365,19 +456,21 @@ function updateOutline() {
   });
 }
 
-/** 7) טעינת קובץ */
-document.getElementById("fileInput").addEventListener("change", function(event) {
+/** 7) טעינת קובץ + הצגת שמו */
+document.getElementById("fileInput").addEventListener("change", function (event) {
   const file = event.target.files[0];
   if (!file) return;
   lastLoadedFile = file;
   lastLoadedFileName = file.name;
+
+  // מציג את השם
   document.getElementById("fileNameSpan").textContent = lastLoadedFileName;
 
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const content = e.target.result;
     originalContent = content;
-    editor.innerHTML = content;
+    document.getElementById("editor").innerHTML = content;
     updateOutline();
   };
   reader.readAsText(file, "UTF-8");
@@ -389,67 +482,74 @@ function refreshEditor() {
   const reader = new FileReader();
   reader.onload = function(e) {
     const content = e.target.result;
-    editor.innerHTML = content;
+    document.getElementById('editor').innerHTML = content;
     updateOutline();
   };
   reader.readAsText(lastLoadedFile, "UTF-8");
 }
 
 /**
- * 9) prettifyHTML:
- *    - כותרות -> מוסיף \n לפני <hX>, \n אחרי </hX>
- *    - <br>/<div> => \n
- *    - מחיקת צמדים <big><small>...
- *    - מחיקת תגים ריקים
- *    - צמצום \n
+ * 9) prettifyHTML לצורכי שמירה:
+ *    - מוסיף \n לפני <hX>, \n אחרי </hX>
+ *    - מוחק צמדים <big><small>... ו </small></big>... 
+ *      (בין אם יש תוכן או לא?)
+ *    - מוחק תגים ריקים (b,i,big,small) 
+ *    - מצמצם \n כפולים
  */
 function prettifyHTML(html) {
   // כותרות
   html = html.replace(/<h([1-6])>/g, '\n<h$1>');
   html = html.replace(/<\/h([1-6])>/g, '</h$1>\n');
 
-  // <br> => \n
-  html = html.replace(/<br[^>]*>/gi, '\n');
-
-  // <div> => \n (מסיר </div>)
-  html = html.replace(/<div[^>]*>/gi, '\n');
-  html = html.replace(/<\/div>/gi, '');
-
-  // צמדי <big><small>... וכו'
+  // מחיקת צמדים <big><small>......</small></big> => נעלם לגמרי
+  // או <small><big>......</big></small>
+  // נשתמש ב-regex g, מוודאים שאין nested tags חיצוניים. 
+  // אם תרצה למחוק רק אם ריק – אפשר לצמצם. 
+  // כאן נניח שכל המופע מנוטרל. 
+  // נפעיל בלולאה עד שאין יותר:
   let prev;
   do {
     prev = html;
+    // סוג ראשון <big><small>...</small></big>
     html = html.replace(/<big><small>([\s\S]*?)<\/small><\/big>/gi, '$1');
+    // סוג שני <small><big>...</big></small>
     html = html.replace(/<small><big>([\s\S]*?)<\/big><\/small>/gi, '$1');
   } while (html !== prev);
 
-  // תגים ריקים (b,i,big,small)
+  // מחיקת תגים ריקים (b,i,big,small), שוב בלולאה
   do {
     prev = html;
-    html = html.replace(/<(b|i|big|small)[^>]*>\s*<\/\1>/gi, '');
+    html = html.replace(/<(b|i|big|small)\s*>\s*<\/\1>/gi, '');
   } while (html !== prev);
 
-  // צמצום שורות כפולות
+  // צמצום שורות ריקות
   html = html.replace(/\n\s*\n+/g, '\n');
 
   return html.trim();
 }
 
-/** 10) שמירה */
+/** 10) שמירה (אין שמירה-עותק או פונקציות נוספות) */
 function saveFile() {
   if (!lastLoadedFileName) {
     alert("לא נטען קובץ. אנא טען קובץ קודם.");
     return;
   }
-  let content = editor.innerHTML;
-  content = prettifyHTML(content);
+  let editorContent = document.getElementById('editor').innerHTML;
+  editorContent = prettifyHTML(editorContent);
 
-  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const blob = new Blob([editorContent], { type: "text/plain;charset=utf-8" });
   const link = document.createElement("a");
   link.download = lastLoadedFileName;
   link.href = window.URL.createObjectURL(blob);
   link.click();
+
+  originalContent = editorContent;
 }
+
+/* בעת עליית הדף */
+document.addEventListener('DOMContentLoaded', () => {
+  updateOutline();
+});
 </script>
 
 </body>
