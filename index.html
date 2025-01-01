@@ -277,6 +277,40 @@ function handleEnter(e) {
   }
 }
 
+document.addEventListener("selectionchange", function() {
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  if (range.collapsed) return;
+
+  const startNode = range.startContainer;
+  const endNode = range.endContainer;
+  let startOffset = range.startOffset;
+  let endOffset = range.endOffset;
+
+  // בדיקה והסרת רווחים בהתחלה
+  if (startNode.nodeType === Node.TEXT_NODE) {
+    const textVal = startNode.nodeValue;
+    while (startOffset < textVal.length && textVal[startOffset] === " ") {
+      startOffset++;
+    }
+  }
+
+  // בדיקה והסרת רווחים בסוף
+  if (endNode.nodeType === Node.TEXT_NODE) {
+    const textVal = endNode.nodeValue;
+    while (endOffset > 0 && textVal[endOffset - 1] === " ") {
+      endOffset--;
+    }
+  }
+
+  // עדכון הטווח
+  range.setStart(startNode, startOffset);
+  range.setEnd(endNode, endOffset);
+  sel.removeAllRanges();
+  sel.addRange(range);
+});
+
 /** 2) הדגשה/ נטוי/ גדול/ קטן - בלי מצבי כפילות */
 function toggleBold()   { toggleSize('b');   updateOutline(); }
 function toggleItalic() { toggleSize('i');   updateOutline(); }
