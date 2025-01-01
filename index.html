@@ -110,7 +110,7 @@
     .side-panel {
       position: fixed;
       top: 4rem;   /* מתחת ל-top-bar שגובהו 3rem */
-      margin-right: 0.8rem;
+      right: 0.8rem;
       bottom: 1rem;
       width: 19vw; /* שימוש ביחידה יחסית לרוחב המסך */
       background: #fff;
@@ -119,6 +119,8 @@
       padding: 0.8rem;
       z-index: 10;
       border-radius: 8px;
+      /* בשיטה הזו, נניח שהידית תבוא אחרי זה */
+      margin-inline-end: 0.5rem;
     }
     .side-panel::-webkit-scrollbar {
       width: 8px; /* רוחב פס הגלילה */
@@ -150,15 +152,25 @@
       text-decoration: underline;
     }
 
+    /* ידית גרירה - resizer (מהקוד הראשון) */
+    #resizer {
+      position: fixed;
+      top: 50px;
+      bottom: 1rem;
+      width: 1.5rem;  /* ידית 0.5rem */
+      right: calc(22vw - 1.5rem);
+      cursor: col-resize;
+      z-index: 9998;
+      background: transparent;
+    }
     /* אזור התוכן (Scrollable) -
        נקבע כ-FIXED כך שהטקסט יגלול בתוכו באופן עצמאי,
        בעוד ה-top-bar וה-side-panel נשארים מעליו. */
     .main-container {
       position: fixed;
       top: 4rem;   /* מתחת ל-top-bar שגובהו 3rem */
-      margin-right: 21vw;
-      margin-left: 0.8rem;
-      width: 78vw; /* שימוש ביחידה יחסית לרוחב המסך */
+      right: calc(20vw + 0.5rem);
+      left: 0.8rem;
       z-index: 50;
       bottom: 1rem;   /* רווח קטן בתחתית */
       overflow-y: auto; /* גלילה עצמאית לתוכן */
@@ -233,13 +245,16 @@
 </div>
 
 <!-- חלונית כותרות בצד ימין (Fixed) -->
-<div class="side-panel">
+<div class="side-panel" id="sidePanel">
   <h2>כותרות במסמך</h2>
   <ul class="outline-list" id="outlineList"></ul>
 </div>
 
+<!-- ידית גרירה (תוספת) -->
+<div id="resizer"></div>
+
 <!-- אזור התוכן, גולל באופן עצמאי (Fixed) -->
-<div class="main-container">
+<div class="main-container" id="mainContainer">
   <div class="editor-container">
     <div 
       id="editor" 
@@ -252,6 +267,45 @@
 </div>
 
 <script>
+
+/* תוספת: ידית גרירה - (מהקוד הראשון) */
+const sidePanel  = document.getElementById("sidePanel");
+const resizer    = document.getElementById("resizer");
+const mainCont   = document.getElementById("mainContainer");
+
+let dragging = false;
+let startX = 0;
+let startWidth = 0;
+
+resizer.addEventListener("mousedown", function(e) {
+  e.preventDefault();
+  dragging = true;
+  startX = e.clientX;
+  startWidth = sidePanel.offsetWidth;
+  document.addEventListener("mousemove", mouseMoveHandler);
+  document.addEventListener("mouseup", mouseUpHandler);
+});
+function mouseMoveHandler(e) {
+  if (!dragging) return;
+  const dx = e.clientX - startX;
+  let newWidth = startWidth - dx; 
+  if (newWidth < 160) newWidth = 160;
+  const maxPix = window.innerWidth * 0.4; 
+  if (newWidth > maxPix) newWidth = maxPix;
+
+  sidePanel.style.width = newWidth + "px";
+
+  /* הידית עצמה */
+  resizer.style.right = (newWidth - 4) + "px";
+  /* mainContainer */
+  mainCont.style.right = (newWidth + 8) + "px";
+}
+function mouseUpHandler(e) {
+  dragging = false;
+  document.removeEventListener("mousemove", mouseMoveHandler);
+  document.removeEventListener("mouseup", mouseUpHandler);
+}
+
 /**
  * משתנים גלובליים
  */
