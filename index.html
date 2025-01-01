@@ -223,12 +223,12 @@
       padding: 0;
       display: inline-block; /* מניעת מרווחים */
     }
-    .tooltip-container-h1 {
+    .tooltip-container  {
             position: relative;
             display: inline-block;
     }
 
-    .tooltip-h1 {
+    .tooltip {
             visibility: hidden;
             background-color: black;
             color: #fff;
@@ -237,14 +237,14 @@
             padding: 5px;
             position: absolute;
             z-index: 1;
-            bottom: 125%; /* Position above the button */
+            top: 125%; /* Position above the button */
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.3s;
         }
 
-        .tooltip-container-h1:hover .tooltip-h1 {
+        .tooltip-container:hover .tooltip {
             visibility: visible;
             opacity: 1;
         }
@@ -289,13 +289,13 @@
 
   <!-- צד אמצע: כפתורי עיצוב -->
   <div class="top-bar-middle">
-    <div class="tooltip-container-h1">
+    <div class="tooltip-container">
     <button onclick="toggleHeading(1)">H1</button>
-      <div class="tooltip-h1">הגדרת כותרת ראשית</div>
+      <div class="tooltip">הגדרת כותרת ראשית</div>
     </div>
-    <div class="tooltip-container-h2">
+    <div class="tooltip-container">
     <button onclick="toggleHeading(2)">H2</button>
-      <div class="tooltip-h2">הגדרת כותרת משנה</div>
+      <div class="tooltip">הגדרת כותרת משנה</div>
     </div>
     <button onclick="toggleHeading(3)">H3</button>
     <button onclick="toggleHeading(4)">H4</button>
