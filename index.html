@@ -205,6 +205,8 @@
   <!-- צד שמאל: כפתורי עיצוב -->
   <div class="top-bar-left">
     <label class="file-label" for="fileInput">טען קובץ</label>
+    <input type="file" id="fileInput" accept=".txt,.html" />
+    <span id="fileNameSpan" class="file-name-display"></span>
   </div>  
 
   <!-- צד אמצע: כפתורי עיצוב -->
@@ -223,8 +225,7 @@
 
   <!-- צד ימין: טעינת קובץ, שם קובץ, רענן, שמירה -->
   <div class="top-bar-right">
-    <input type="file" id="fileInput" accept=".txt,.html" />
-    <span id="fileNameSpan" class="file-name-display"></span>
+
 
     <button class="refresh-button" onclick="refreshEditor()">רענן טקסט</button>
     <button class="save-button" onclick="saveFile()">שמירה</button>
