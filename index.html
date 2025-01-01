@@ -442,12 +442,10 @@ function toggleSmall()  { toggleSize('small'); updateOutline(); }
 
 /** פונקציה בסיסית לעטיפת טווח בתג מסוים */
 function wrapSelection(range, tagName) {
-  const newElem = document.createElement(tagName);
-  try {
-    range.surroundContents(newElem);
-  } catch (e) {
-    console.error("לא ניתן לעטוף את הבחירה", e);
-  }
+  const selectedContents = range.extractContents(); // מוציא את הטקסט שנבחר
+  const newElement = document.createElement(tagName); // יוצר אלמנט חדש עם תג התבנית
+  newElement.appendChild(selectedContents); // עוטף את התוכן הנבחר בתג החדש
+  range.insertNode(newElement); // מחזיר את התג החדש למקום שבו היה הטקסט
 }
 
 /** בודק האם הבחירה חופפת ל-100% מהטקסט של parent */
