@@ -214,8 +214,7 @@
       width: 100%;
       direction: rtl;   /* כתיבה מימין לשמאל */
       text-align: right;
-      white-space: pre-line; /* \n => ירידת שורה */
-      display: block;
+      white-space: normal; /* \n => ירידת שורה */
       color: black;
     }
     /* מניעת מרווחים סביב כותרות */
@@ -875,6 +874,27 @@ function prettifyHTML(html) {
   html = html.replace(/<h([1-6])>/g, '\n<h$1>');
   html = html.replace(/<\/h([1-6])>/g, '</h$1>\n');
 
+  // <br> => \n
+  html = html.replace(/<br[^>]*>/gi, '\n');
+
+  // &nbsp; => \n
+  html = html.replace(/&nbsp;/gi, '\n');
+
+  // &lt; => <
+  html = html.replace(/&lt;/gi, '<');
+
+  // <div> => 
+  html = html.replace(/<div>/gi, '');
+
+  // </div> => 
+  html = html.replace(/<\/div>/gi, '\n');
+
+  //  </div><div>   => 
+  html = html.replace(/<\/div><div>/gi, '');
+
+  // &gt; => >
+  html = html.replace(/&gt;/gi, '>');
+    
   // מחיקת צמדים <big><small>......</small></big> => נעלם לגמרי
   // או <small><big>......</big></small>
   // נשתמש ב-regex g, מוודאים שאין nested tags חיצוניים. 
