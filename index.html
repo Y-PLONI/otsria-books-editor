@@ -121,6 +121,7 @@
       border-radius: 8px;
       /* בשיטה הזו, נניח שהידית תבוא אחרי זה */
       margin-inline-end: 0.5rem;
+      margin-left: 12px;
     }
     .side-panel::-webkit-scrollbar {
       width: 8px; /* רוחב פס הגלילה */
@@ -153,16 +154,29 @@
     }
 
     /* ידית גרירה - resizer (מהקוד הראשון) */
-    #resizer {
-      position: fixed;
-      top: 50px;
-      bottom: 1rem;
-      width: 1.5rem;  /* ידית 0.5rem */
-      right: calc(22vw - 1.5rem);
-      cursor: col-resize;
-      z-index: 9998;
-      background: transparent;
-    }
+  #resizer {
+    position: fixed;
+    top: 50px;
+    bottom: 1rem;
+    width: 1.5rem;  /* ידית 0.5rem */
+    right: calc(22vw - 1.5rem);
+    cursor: col-resize;
+    z-index: 9998;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+  }
+
+ /* עיצוב הסימן */
+#resizer::before {
+  content: "⋮"; /* שלוש נקודות אנכיות */
+  font-size: 30px;
+  color: rgba(0, 0, 0, 0.6); /* צבע עדין */
+  text-align: center;
+}
+
     /* אזור התוכן (Scrollable) -
        נקבע כ-FIXED כך שהטקסט יגלול בתוכו באופן עצמאי,
        בעוד ה-top-bar וה-side-panel נשארים מעליו. */
@@ -179,6 +193,7 @@
       padding: 1rem;
       min-height: 80vh;
       border-radius: 8px;
+      margin-right: 12px;
     }
     .main-container::-webkit-scrollbar {
       width: 8px; /* רוחב פס הגלילה */
@@ -378,44 +393,248 @@ function toggleSmall()  { toggleSize('small'); updateOutline(); }
  *    - בעת הייצוא נמחק גם צמדים <big><small> וכו' או ריקים.
  *    - ביטול הדגשה חלקי => נטפל ע"י פיצול טקסט בהמשך (אם תרצה).
  */
-function toggleSize(tagRequested) {
+
+ function toggleSize(tagRequested) {
   const sel = window.getSelection();
   if (!sel.rangeCount) return;
 
-  removeSelectionSpaces(sel); // לא עוטף רווחים
-
+  removeSelectionSpaces(sel); 
   const range = sel.getRangeAt(0);
-  const htmlBefore = getRangeHTML(range);
 
-  // מזהים אם כבר יש tagRequested, או תגים אחרים
-  const hasTag = new RegExp(`<${tagRequested}[^>]*>`,'i').test(htmlBefore);
-  const hasAnyTag = /<(?:b|i|big|small)\b[^>]*>/i.test(htmlBefore);
-
-  // שליפה
-  const extracted = range.extractContents();
-  const container = document.createElement("div");
-  container.appendChild(extracted);
-  let inner = container.innerHTML;
-
-  // הסרה מוחלטת של b,i,big,small
-  inner = removeAllSizeTags(inner);
-
-  // אם כבר היה tag כלשהו => ביטלנו, לא מוסיפים.
-  // אם לא היה => נוסיף tagRequested
-  if (!hasAnyTag) {
-    inner = `<${tagRequested}>${inner}</${tagRequested}>`;
+  // חיפוש התג העוטף
+  const parent = findWrappingTag(range);
+  if (!parent) {
+    // אין תג => עוטפים רגיל
+    wrapSelection(range, tagRequested);
+    updateOutline();
+    return;
   }
 
-  // החזרה למסמך
-  const newFrag = document.createRange().createContextualFragment(inner);
-  range.insertNode(newFrag);
+  // אם כבר עטוף באותו תג => נבדוק האם מדובר בכל הטקסט?
+  const oldTag = parent.tagName.toLowerCase();
+  if (oldTag === tagRequested) {
+    // בדיקה האם הבחירה היא 100% הטקסט שבתוך parent
+    if (selectionIsFullParent(range, parent)) {
+      // אם אכן כל הטקסט => הסר לחלוטין
+      unwrapNode(parent);
+    } else {
+      // אחרת => פיצול חלקי: מוציאים רק את החלק שבחרנו
+      const newHtml = partialUnwrap(range, parent); 
+      parent.outerHTML = newHtml;
+    }
+    updateOutline();
+    return;
+  }
 
-  // מקמים את הסמן אחרי
-  const selRange = document.createRange();
-  selRange.setStartAfter(newFrag);
-  selRange.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(selRange);
+  // אם התג הקיים שונה מהמבוקש (למשל היה <b> ורוצים <i>),
+  // או היה <h3> ורוצים לבטל רק חלק, וכו’:
+  // בדיקה האם הבחירה היא 100% הטקסט?
+  if (selectionIsFullParent(range, parent)) {
+    // אם כן => החלף תג
+    parent.outerHTML = replaceTag(parent.outerHTML, oldTag, tagRequested);
+  } else {
+    // אחרת => פיצול (הקטע הנבחר מקבל tagRequested)
+    const newHtml = handlePartialSplit(range, tagRequested, parent);
+    parent.outerHTML = newHtml;
+  }
+  updateOutline();
+}
+
+/** פונקציה בסיסית לעטיפת טווח בתג מסוים */
+function wrapSelection(range, tagName) {
+  const newElem = document.createElement(tagName);
+  try {
+    range.surroundContents(newElem);
+  } catch (e) {
+    console.error("לא ניתן לעטוף את הבחירה", e);
+  }
+}
+
+/** בודק האם הבחירה חופפת ל-100% מהטקסט של parent */
+function selectionIsFullParent(range, parent) {
+  const selectedText = range.toString();
+  const parentText   = parent.textContent;
+  return selectedText.trim() === parentText.trim();
+}
+
+/**
+ * partialUnwrap - מוציא רק את החלק המסומן מתוך parent,
+ * ושומר על שאר הטקסט באותו תג.
+ *
+ * לדוגמה:
+ *  <b>שלום עליכם</b> => בוחרים "עליכם", ומבטלים => 
+ *    <b>שלום </b>עליכם<b></b> (או ללא ה-b האחרון אם אין אחרי כלום).
+ */
+function partialUnwrap(range, parent) {
+  // נשתמש באותה לוגיקה כמו handlePartialSplit, 
+  // רק שהתג המבוקש הוא "ללא תגים" עבור המילה הנבחרת:
+  const fullText    = parent.textContent;
+  const startOffset = getOffsetInParent(range, parent, true);
+  const endOffset   = getOffsetInParent(range, parent, false);
+
+  const oldTag = parent.tagName.toLowerCase();
+
+  if (startOffset === -1 || endOffset === -1) {
+    // fallback: הסרה של כל התג
+    return escapeHtml(fullText);
+  }
+
+  const beforePart  = fullText.slice(0, startOffset);
+  const selected    = fullText.slice(startOffset, endOffset);
+  const afterPart   = fullText.slice(endOffset);
+
+  let resultHTML = "";
+  if (beforePart.trim()) {
+    resultHTML += `<${oldTag}>${escapeHtml(beforePart)}</${oldTag}>`;
+  }
+  // החלק הנבחר יוצא לגמרי מהתג => בלי <b> או <h3>
+  resultHTML += escapeHtml(selected);
+
+  if (afterPart.trim()) {
+    resultHTML += `<${oldTag}>${escapeHtml(afterPart)}</${oldTag}>`;
+  }
+  return resultHTML;
+}
+
+/** החלפת תג (למשל <b> => <i>) במלואו */
+function replaceTag(html, oldTag, newTag) {
+  const openRegex = new RegExp(`<${oldTag}(\\b[^>]*)>`, 'gi');
+  const closeRegex = new RegExp(`</${oldTag}>`, 'gi');
+  return html
+    .replace(openRegex, `<${newTag}$1>`)
+    .replace(closeRegex, `</${newTag}>`);
+}
+
+ /**
+ * מבצע פיצול של התג הקיים וסביבת הטקסט הנבחר.
+ * 
+ * @param {Range} range - הטווח הנבחר.
+ * @param {string} newTag - התג החדש שברצונך להוסיף (למשל "small").
+ * @returns {string} - מחרוזת HTML לאחר הפיצול.
+ */
+/**
+ * מבצע פיצול של הטקסט שבתוך `parent`, כך שהקטע הנבחר
+ * יהפוך לתג `newTag`, והשאר ישארו בתג המקורי.
+ * 
+ * @param {Range} range      - הטווח הנבחר.
+ * @param {string} newTag    - התג החדש שברצונך להוסיף (למשל "small").
+ * @param {Element} parent   - התג הקיים (למשל <big>) שעוטף את הטקסט.
+ * @returns {string}         - מחרוזת HTML לאחר הפיצול.
+ */
+ function handlePartialSplit(range, newTag, parent) {
+  const fullText = parent.textContent || "";
+  const startOffset = getOffsetInParent(range, parent, true);
+  const endOffset   = getOffsetInParent(range, parent, false);
+
+  if (startOffset === -1 || endOffset === -1) {
+    // לא הצלחנו למפות => נחזיר רק את הבחירה בתג החדש
+    return `<${newTag}>${escapeHtml(range.toString())}</${newTag}>`;
+  }
+
+  // מחלקים לשלושה חלקים
+  const beforePart = fullText.slice(0, startOffset);
+  const selected   = fullText.slice(startOffset, endOffset);
+  const afterPart  = fullText.slice(endOffset);
+
+  const oldTag = parent.tagName.toLowerCase();
+  // בניית HTML חדש:
+  //  - אם beforePart לא ריק => עטוף ב-oldTag
+  //  - באמצע => newTag
+  //  - אם afterPart לא ריק => עטוף ב-oldTag
+  let resultHTML = "";
+
+  if (beforePart.trim().length) {
+    resultHTML += `<${oldTag}>${escapeHtml(beforePart)}</${oldTag}>`;
+  }
+
+  if (selected.trim().length) {
+    resultHTML += `<${newTag}>${escapeHtml(selected)}</${newTag}>`;
+  } else {
+    // אם לא נבחר כלום => ניצור תג ריק newTag
+    resultHTML += `<${newTag}></${newTag}>`;
+  }
+
+  if (afterPart.trim().length) {
+    resultHTML += `<${oldTag}>${escapeHtml(afterPart)}</${oldTag}>`;
+  }
+
+  return resultHTML;
+}
+
+/**
+ * מחפש את התג העוטף עם אחד התגים: b, i, big, small.
+ * 
+ * @param {Range} range - הטווח הנבחר.
+ * @returns {Element|null} - התג העוטף או null אם לא נמצא.
+ */
+ function findWrappingTag(range) {
+  let node = range.commonAncestorContainer;
+  while (node && node !== document.body) {
+    if (node.nodeType === 1) { // ELEMENT_NODE
+      const tag = node.tagName && node.tagName.toLowerCase();
+      if (['b','i','big','small'].includes(tag)) {
+        return node;
+      }
+    }
+    node = node.parentNode;
+  }
+  return null;
+}
+
+/**
+ * מסיר את התג הנתון מה-DOM, משאיר את התוכן בתוכו.
+ * 
+ * @param {Element} node - התג להסרה.
+ */
+ function unwrapNode(node) {
+  const parent = node.parentNode;
+  while (node.firstChild) {
+    parent.insertBefore(node.firstChild, node);
+  }
+  parent.removeChild(node);
+}
+
+/**
+ * מוצא את המיקום (Offset) בתוך הטקסט של ההורה.
+ * 
+ * @param {Range} range - הטווח הנבחר.
+ * @param {Element} parent - התג ההורה.
+ * @param {boolean} isStart - האם מדובר בהתחלת הבחירה.
+ * @returns {number} - המיקום היחסי או -1 אם לא נמצא.
+ */
+function getOffsetInParent(range, parent, isStart) {
+  const walker = document.createTreeWalker(parent, NodeFilter.SHOW_TEXT, null);
+  let currentOffset = 0;
+  let found = -1;
+  
+  while (walker.nextNode()) {
+    const textNode = walker.currentNode;
+    const textLen = textNode.nodeValue.length;
+
+    if (range[isStart ? 'startContainer' : 'endContainer'] === textNode) {
+      // מצאנו את צומת הטקסט
+      const offsetInNode = isStart ? range.startOffset : range.endOffset;
+      found = currentOffset + offsetInNode;
+      break;
+    }
+    currentOffset += textLen;
+  }
+  return found;
+}
+
+/**
+ * המרה בסיסית של תווים מיוחדים ל-HTML Entities.
+ * 
+ * @param {string} str - המחרוזת להמרה.
+ * @returns {string} - המחרוזת לאחר ההמרה.
+ */
+function escapeHtml(str) {
+  return str
+    .replace(/&/g,  '&amp;')
+    .replace(/</g,  '&lt;')
+    .replace(/>/g,  '&gt;')
+    .replace(/"/g,  '&quot;')
+    .replace(/'/g,  '&#39;');
 }
 
 /** 4) הסרת כל <b>/<i>/<big>/<small> ממחרוזת */
@@ -646,6 +865,13 @@ function saveFile() {
 document.addEventListener('DOMContentLoaded', () => {
   updateOutline();
 });
+
+  // מיקום הסימן של הוזזה במרכז
+  window.addEventListener("resize", () => {
+    const sidePanelWidth = sidePanel.offsetWidth;
+    resizer.style.right = (sidePanelWidth - 2) + "px";
+    mainCont.style.right = (sidePanelWidth + 10) + "px"; // שמירת רווחים
+  });
 </script>
 
 </body>
