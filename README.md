@@ -1,4 +1,4 @@
-https://y-ploni.github.io/otsria-books-editing/
+https://y-ploni.github.io/otsria-books-editor/
 
 בעיות לתיקון:
 
