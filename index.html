@@ -74,6 +74,7 @@
       font-size: 0.9rem;
       transition: background 0.3s ease;
       text-decoration: none;
+      color: black;
     }
     button:hover,
     .file-label:hover {
@@ -256,7 +257,7 @@
 
 <!-- תפריט עליון (Fixed) -->
 <div class="top-bar">
-  <!-- צד שמאל: כפתורי עיצוב -->
+  <!-- צד שמאל: טעינת קובץ, שם קובץ, -->
   <div class="top-bar-left">
     <label class="file-label" for="fileInput">טען קובץ</label>
     <input type="file" id="fileInput" accept=".txt,.html" />
@@ -273,51 +274,27 @@
     <button onclick="toggleHeading(2)">H2</button>
       <div class="tooltip">הגדרת כותרת רמה 2</div>
     </div>
-    <div class="tooltip-container">
     <button onclick="toggleHeading(3)">H3</button>
-          <div class="tooltip">הגדרת כותרת רמה 3</div>
-    </div>
-    <div class="tooltip-container">
     <button onclick="toggleHeading(4)">H4</button>
-        <div class="tooltip">הגדרת כותרת רמה 4</div>
-    </div>
-    <div class="tooltip-container">
     <button onclick="toggleHeading(5)">H5</button>
-        <div class="tooltip">הגדרת כותרת רמה 5</div>
-    </div>
-    <div class="tooltip-container">
     <button onclick="toggleHeading(6)">H6</button>
-        <div class="tooltip">הגדרת כותרת רמה 6</div>
-    </div>
-    <div class="tooltip-container">
     <button onclick="toggleBold()">הדגש</button>
-        <div class="tooltip">הדגש את הטקסט שנבחר</div>
-    </div>
-    <div class="tooltip-container">
     <button onclick="toggleItalic()">נטוי</button>
-        <div class="tooltip">הטה את הטקסט שנבחר</div>
-    </div>
-    <div class="tooltip-container">
     <button onclick="toggleBig()">גדול</button>
-        <div class="tooltip">הגדל את הטקסט שנבחר</div>
-    </div>
-    <div class="tooltip-container">
     <button onclick="toggleSmall()">קטן</button>
-        <div class="tooltip">הקטן את הטקסט שנבחר</div>
-    </div>
   </div>
 
-  <!-- צד ימין: טעינת קובץ, שם קובץ, רענן, שמירה -->
+  <!-- צד ימין: רענן, שמירה -->
   <div class="top-bar-right">
 
     <div class="tooltip-container">
-    <button class="refresh-button" onclick="refreshEditor()">רענן טקסט</button>
-      <div class="tooltip">בטל את כל השינויים, וחזור למצב שממנו טענת את הקובץ לדף. שים לב, לא תראה שינויים שבוצעו בקובץ האמיתי!</div>
+    <button class="refresh-button" onclick="refreshEditor()">אפס עריכה</button>
+      <div class="tooltip">אפס את כל השינויים שעשית</div>
    </div> 
     
     <div class="tooltip-container">
     <button class="save-button" onclick="saveFile()">שמירה</button>
-      <div class="tooltip">שמור את הקובץ</div>
+      <div class="tooltip">שומר עותק באותו שם בתיקיית ההורדות</div>
   </div>
 </div>
 
@@ -337,7 +314,6 @@
       id="editor" 
       contenteditable="true"
       onkeydown="handleEnter(event)"
-    >
       <p>טען קובץ, והתחל לערוך אותו!!!</p>
     </div>
   </div>
