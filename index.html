@@ -623,8 +623,6 @@ function toggleHeading(level) {
   const openTag = `<h${level}>`;
   const closeTag = `</h${level}>`;
 
-  addNewlineBefore(range);
-
   // אם כבר עטוף => הסר
   if (inner.startsWith(openTag) && inner.endsWith(closeTag)) {
     inner = inner.slice(openTag.length, inner.length - closeTag.length);
@@ -643,30 +641,6 @@ function toggleHeading(level) {
   sel.addRange(range);
 
   updateOutline();
-}
-
-/** מוסיף \n לפני הכותרת, אם אין */
-function addNewlineBefore(range) {
-  const textNode = range.startContainer;
-  if (textNode && textNode.nodeType === 3) {
-    if (!textNode.nodeValue.endsWith("\n")) {
-      const newLine = document.createTextNode("\n");
-      range.insertNode(newLine);
-      range.setStartAfter(newLine);
-      range.setEndAfter(newLine);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
-  } else {
-    const newLine = document.createTextNode("\n");
-    range.insertNode(newLine);
-    range.setStartAfter(newLine);
-    range.setEndAfter(newLine);
-    const sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
 }
 
 /** 6) עדכון חלונית כותרות (צד ימין) */
