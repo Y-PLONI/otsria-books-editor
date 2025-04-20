@@ -13,8 +13,9 @@
       padding: 0;
       height: 100%;
       width: 100%;
-      font-family: "Segoe UI", Arial, Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', "David Libre", Arial, Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f2f2f2;
+      line-height: 1.6;
     }
 
     /* תפריט עליון (fixed), כך שתמיד יהיה מעל (לא יגלול יחד עם הטקסט). 
@@ -25,15 +26,17 @@
       right: 0;
       left: 0;
       height: 50px;
-      background: #1976d2;
+      background: linear-gradient(135deg, #1976d2, #2196f3);
       color: #fff;
       display: flex;
       align-items: center;
-      justify-content: space-between; /* שמאל/ימין */
+      justify-content: space-between;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       z-index: 9999;
       padding: 0 8px;
+      transition: all 0.3s ease;
     }
+    
     /* בלוק אמצעי - כפתורי עיצוב */
     .top-bar-middle {
       display: flex;
@@ -41,7 +44,10 @@
       gap: 8px;
       margin-left: 8px;
       margin-right: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
+    
     /* בלוק שמאלי - כפתור טעינת קובץ */
     .top-bar-left {
       display: flex;
@@ -50,6 +56,7 @@
       margin-left: 8px;
       margin-right: 8px;
     }      
+    
     /* בלוק ימני - כפתור שם קובץ, רענן, שמירה */
     .top-bar-right {
       display: flex;
@@ -68,125 +75,188 @@
       border: none;
       border-radius: 16px;
       padding: 6px 12px;
-      background: #1565c0;
+      background: linear-gradient(135deg, #1976d2, #2196f3);
       color: #fff;
       cursor: pointer;
       font-size: 0.9rem;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
       text-decoration: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
+    
     button:hover,
     .file-label:hover {
-      background: #0d47a1;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    #fontSettingsModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    }
+
+    #fontSettingsModal .modal-overlay {
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #fontSettingsModal .modal {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 300px;
+        text-align: center;
+    }
+
+    #fontSettingsModal label,
+    #fontSettingsModal h3 {
+        text-align: center;
+        display: block;
+    }
+
+    #fontSettingsModal select, 
+    #fontSettingsModal input {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    #fontSizeDisplay {
+        text-align: center;
+        display: block;
+    }
+
+
+    .modal-buttons {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
     }
 
     /* כפתורים מיוחדים */
     .save-button {
-      background: #388e3c; /* ירוק Material */
+      background: linear-gradient(135deg, #388e3c, #4caf50);
     }
+    
     .save-button:hover {
-      background: #2e7d32;
+      background: linear-gradient(135deg, #2e7d32, #43a047);
     }
+    
     .refresh-button {
-      background: #5d4037; /* חום */
+      background: linear-gradient(135deg, #5d4037, #795548);
     }
+    
     .refresh-button:hover {
-      background: #4e342e;
+      background: linear-gradient(135deg, #4e342e, #6d4c41);
     }
 
     /* תווית שם הקובץ */
     .file-name-display {
       font-weight: bold;
-      color: #ffeb3b; /* צהבהב */
+      color: #ffeb3b;
       margin-left: 4px;
     }
 
-    /* מסתירים input[type=file], מציגים רק label (—> בוטל בשינוי החדש) */
-
-    /* חלונית כותרות בצד ימין (fixed) - לא תזוז בגלילה */
+    /* חלונית כותרות בצד ימין (fixed) */
     .side-panel {
       position: fixed;
-      top: 4rem;   /* מתחת ל-top-bar שגובהו 3rem */
+      top: 4rem;
       right: 0.8rem;
       bottom: 1rem;
-      width: 19vw; /* שימוש ביחידה יחסית לרוחב המסך */
+      width: 19vw;
       background: #fff;
       box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.1);
       overflow-y: auto;
       padding: 0.8rem;
       z-index: 10;
       border-radius: 8px;
-      /* בשיטה הזו, נניח שהידית תבוא אחרי זה */
       margin-inline-end: 0.5rem;
       margin-left: 12px;
       color: black;
     }
+    
     .side-panel::-webkit-scrollbar {
-      width: 8px; /* רוחב פס הגלילה */
-      direction: rtl; /* כיוון פס הגלילה */
+      width: 8px;
+      direction: rtl;
     }
+    
     .side-panel::-webkit-scrollbar-thumb {
-      background-color: #b6b4b4; /* צבע הפס */
+      background-color: #b6b4b4;
       border-radius: 4px;
-      min-height: 35px; /* גובה מינימלי של פס הגלילה */
+      min-height: 35px;
     }
+    
     .side-panel::-webkit-scrollbar-thumb:hover {
-      background-color: #555; /* צבע הפס כשעוברים מעליו */
+      background-color: #555;
     }
+    
     .side-panel h2 {
       font-size: 1rem;
       margin: 8px 0;
     }
+    
     .outline-list {
       list-style-type: none;
       margin: 0;
       padding: 0;
     }
+    
     .outline-list li {
       margin-bottom: 6px;
       cursor: pointer;
       color: #1976d2;
       word-wrap: break-word;
     }
+    
     .outline-list li:hover {
       text-decoration: underline;
     }
 
-    /* ידית גרירה - resizer (מהקוד הראשון) */
+    /* ידית גרירה */
     #resizer {
       position: fixed;
-      top: 50px;
+      top: 50px;  /* מתחת לפס העליון */
       bottom: 1rem;
-      width: 1.5rem;  /* ידית 0.5rem */
-      right: calc(22vw - 1.5rem);
+      width: 10px;  /* רוחב צר יותר */
+      right: calc(20vw - 10px);  /* מיקום מחוץ לחלונית */
       cursor: col-resize;
-      z-index: 9998;
       background: transparent;
+      z-index: 9998;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 4px;
     }
 
-    /* עיצוב הסימן */
     #resizer::before {
-      content: "⋮"; /* שלוש נקודות אנכיות */
+      content: "⋮";  /* סימן גרירה */
       font-size: 30px;
-      color: rgba(0, 0, 0, 0.6); /* צבע עדין */
+      color: rgba(0, 0, 0, 0.6);
       text-align: center;
     }
-
-    /* אזור התוכן (Scrollable) -
-       נקבע כ-FIXED כך שהטקסט יגלול בתוכו באופן עצמאי,
-       בעוד ה-top-bar וה-side-panel נשארים מעליו. */
+    
+    /* אזור התוכן */
     .main-container {
       position: fixed;
-      top: 4rem;   /* מתחת ל-top-bar שגובהו 3rem */
+      top: 4rem;
       right: calc(20vw + 0.5rem);
       left: 0.8rem;
       z-index: 50;
-      bottom: 1rem;   /* רווח קטן בתחתית */
-      overflow-y: auto; /* גלילה עצמאית לתוכן */
+      bottom: 1rem;
+      overflow-y: auto;
       background: #fff;
       box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.1);
       padding: 1rem;
@@ -194,17 +264,20 @@
       border-radius: 8px;
       margin-right: 12px;
     }
+    
     .main-container::-webkit-scrollbar {
-      width: 8px; /* רוחב פס הגלילה */
-      direction: rtl; /* כיוון פס הגלילה */
+      width: 8px;
+      direction: rtl;
     }
+    
     .main-container::-webkit-scrollbar-thumb {
-      background-color: #b6b4b4; /* צבע הפס */
+      background-color: #b6b4b4;
       border-radius: 4px;
-      min-height: 35px; /* גובה מינימלי של פס הגלילה */
+      min-height: 35px;
     }
+    
     .main-container::-webkit-scrollbar-thumb:hover {
-      background-color: #555; /* צבע הפס כשעוברים מעליו */
+      background-color: #555;
     }
 
     #editor {
@@ -212,17 +285,21 @@
       outline: none;
       cursor: text;
       width: 100%;
-      direction: rtl;   /* כתיבה מימין לשמאל */
+      direction: rtl;
       text-align: right;
-      white-space: pre-line; /* \n => ירידת שורה */
+      white-space: pre-line;
       display: block;
       color: black;
+      font-size: clamp(16px, 2vw, 20px);
+      letter-spacing: 0.5px;
     }
+    
     /* מניעת מרווחים סביב כותרות */
     #editor h1, #editor h2, #editor h3, #editor h4, #editor h5, #editor h6 {
       margin: 0; 
       padding: 0;
     }
+    
     .tooltip-container  {
       position: relative;
       display: inline-block;
@@ -237,7 +314,7 @@
       padding: 5px;
       position: absolute;
       z-index: 99;
-      top: 160%; /* Position above the button */
+      top: 160%;
       left: 50%;
       transform: translateX(-50%);
       opacity: 0;
@@ -248,6 +325,31 @@
     .tooltip-container:hover .tooltip {
       visibility: visible;
       opacity: 1;
+    }
+
+    /* רספונסיביות */
+    @media screen and (max-width: 768px) {
+      .top-bar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+      }
+
+      .top-bar-middle {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .side-panel {
+        width: 100%;
+        position: static;
+        margin: 10px 0;
+      }
+
+      .main-container {
+        left: 0;
+        right: 0;
+      }
     }
   </style>
 </head>
@@ -284,7 +386,11 @@
 
   <!-- צד ימין: כפתור רענון (שונה), שמירה -->
   <div class="top-bar-right">
-    <!-- במקום “אפס עריכה” => “טען מחדש” (File System Access) -->
+    <div class="tooltip-container">
+      <button onclick="openFontSettings()">הגדרות גופן</button>
+      <div class="tooltip">בחירת גופן וגודל</div>
+    </div>
+    <!-- במקום "אפס עריכה" => "טען מחדש" (File System Access) -->
     <div class="tooltip-container">
       <button class="refresh-button" id="reloadFileButton" disabled>טען מחדש</button>
       <div class="tooltip">טען מחדש את התוכן מהקובץ</div>
@@ -313,16 +419,125 @@
       id="editor" 
       contenteditable="true"
       onkeydown="handleEnter(event)"
-      <p>טען קובץ, והתחל לערוך אותו!!!</p>
+    >
+      טען קובץ, והתחל לערוך אותו!!!
     </div>
   </div>
 </div>
 
 <script>
+
+// משתנים גלובליים לשמירת הגדרות אחרונות
+let lastSelectedFont = localStorage.getItem('lastSelectedFont') || 'Arial';
+let lastSelectedFontSize = localStorage.getItem('lastSelectedFontSize') || 16;
+
+function openFontSettings() {
+    const modal = document.createElement('div');
+    modal.id = 'fontSettingsModal';
+    modal.innerHTML = `
+        <div class="modal-overlay">
+            <div class="modal">
+                <h3>הגדרות גופן</h3>
+                
+                <label>גופן:</label>
+                <select id="fontFamilySelect">
+                    ${getSystemFonts().map(font => `
+                        <option value="${font}" ${font === lastSelectedFont ? 'selected' : ''}>
+                            ${font}
+                        </option>
+                    `).join('')}
+                </select>
+
+                <label>גודל גופן:</label>
+                <input 
+                    type="range" 
+                    id="fontSizeRange" 
+                    min="6" 
+                    max="72" 
+                    value="${lastSelectedFontSize}"
+                >
+                <span id="fontSizeDisplay">${lastSelectedFontSize}</span>
+
+                <div class="modal-buttons">
+                    <button onclick="applyFontSettings()">אישור</button>
+                    <button onclick="closeFontSettings()">ביטול</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // סגירה בלחיצה מחוץ לחלונית
+    modal.querySelector('.modal-overlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeFontSettings();
+        }
+    });
+
+    document.getElementById('fontSizeRange').addEventListener('input', function() {
+        document.getElementById('fontSizeDisplay').textContent = this.value;
+    });
+}
+
+function getSystemFonts() {
+    // רשימת גופנים נפוצים
+    return [
+        'Arial', 'Segoe UI', 'Helvetica', 'Times New Roman', 'Courier', 'Verdana', 
+        'Georgia', 'Palatino', 'Garamond', 'Bookman', 'Comic Sans MS', 'Geneva', 'sans-serif',
+        'Trebuchet MS', 'Arial Black', 'Impact', 'David', 'Miriam', 'David Libre', 'Tahoma', 
+        'Narkisim', 'Hadassa'
+    ];
+}
+
+function applyFontSettings() {
+    const fontFamily = document.getElementById('fontFamilySelect').value;
+    const fontSize = document.getElementById('fontSizeRange').value;
+    
+    // שמירה ב-localStorage
+    localStorage.setItem('lastSelectedFont', fontFamily);
+    localStorage.setItem('lastSelectedFontSize', fontSize);
+    
+    // עדכון משתנים גלובליים
+    lastSelectedFont = fontFamily;
+    lastSelectedFontSize = fontSize;
+    
+    const editor = document.getElementById('editor');
+    editor.style.fontFamily = fontFamily;
+    editor.style.fontSize = fontSize + 'px';
+    
+    closeFontSettings();
+}
+
+// הפעלת הגדרות האחרונות בטעינת העמוד
+window.addEventListener('load', () => {
+    const editor = document.getElementById('editor');
+    editor.style.fontFamily = lastSelectedFont;
+    editor.style.fontSize = `${lastSelectedFontSize}px`;
+});
+
+function closeFontSettings() {
+    const modal = document.getElementById('fontSettingsModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
 /* תוספת: ידית גרירה - (מהקוד הראשון) */
-const sidePanel  = document.getElementById("sidePanel");
-const resizer    = document.getElementById("resizer");
-const mainCont   = document.getElementById("mainContainer");
+const sidePanel = document.getElementById("sidePanel");
+const resizer = document.getElementById("resizer");
+const mainCont = document.getElementById("mainContainer");
+
+// פונקציה לחישוב מיקום מדויק של ה-resizer
+function updateResizerPosition() {
+  const sidePanelWidth = sidePanel.offsetWidth;
+  
+  // מיקום הידית בצד ימין של לוח הצד 
+  resizer.style.right = `calc(${sidePanelWidth}px - 12px)`;
+  
+  // עדכון מיקום התוכן הראשי
+  mainCont.style.right = `calc(${sidePanelWidth}px + 8px)`;
+}
 
 let dragging = false;
 let startX = 0;
@@ -336,26 +551,38 @@ resizer.addEventListener("mousedown", function(e) {
   document.addEventListener("mousemove", mouseMoveHandler);
   document.addEventListener("mouseup", mouseUpHandler);
 });
+
 function mouseMoveHandler(e) {
   if (!dragging) return;
+  
   const dx = e.clientX - startX;
   let newWidth = startWidth - dx; 
+  
+  // הגבלת רוחב מינימלי
   if (newWidth < 160) newWidth = 160;
+  
+  // הגבלת רוחב מקסימלי (40% מרוחב החלון)
   const maxPix = window.innerWidth * 0.4; 
   if (newWidth > maxPix) newWidth = maxPix;
 
-  sidePanel.style.width = newWidth + "px";
-
-  /* הידית עצמה */
-  resizer.style.right = (newWidth - 4) + "px";
-  /* mainContainer */
-  mainCont.style.right = (newWidth + 8) + "px";
+  // עדכון רוחב לוח הצד
+  sidePanel.style.width = `${newWidth}px`;
+  
+  // עדכון מיקום הידית והתוכן
+  updateResizerPosition();
 }
+
 function mouseUpHandler(e) {
   dragging = false;
   document.removeEventListener("mousemove", mouseMoveHandler);
   document.removeEventListener("mouseup", mouseUpHandler);
 }
+
+// עדכון מיקום בעת טעינת העמוד
+window.addEventListener("load", updateResizerPosition);
+
+// עדכון מיקום בעת שינוי גודל החלון
+window.addEventListener("resize", updateResizerPosition);
 
 /** 
  * הוספת משתנים/פונקציות ל-File System Access
@@ -613,36 +840,101 @@ function trimSelectionEnd(range, sel) {
 function toggleHeading(level) {
   const sel = window.getSelection();
   if (!sel.rangeCount) return;
-  const range = sel.getRangeAt(0);
+  let range = sel.getRangeAt(0);
 
-  const extracted = range.collapsed ? null : range.extractContents();
-  const container = document.createElement('div');
-  if (extracted) container.appendChild(extracted);
+  // אם הבחירה נמצאת בתוך כותרת קיימת, נשמור את הטקסט שלה ונמחק אותה
+  let parentHeader = (range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE 
+    ? range.commonAncestorContainer.closest("h1, h2, h3, h4, h5, h6")
+    : null);
 
-  let inner = container.innerHTML.trim();
-  const openTag = `<h${level}>`;
-  const closeTag = `</h${level}>`;
-
-  addNewlineBefore(range);
+  // נשתמש בטקסט הטהור – ללא HTML – כך שכל תג לא רצוי יעלם
+  let selectedText = range.toString();
+  let siblingElements = [];
   
-  // אם כבר עטוף => הסר
-  if (inner.startsWith(openTag) && inner.endsWith(closeTag)) {
-    inner = inner.slice(openTag.length, inner.length - closeTag.length);
-    const frag = document.createRange().createContextualFragment(inner);
-    range.insertNode(frag);
+  if (parentHeader) {
+    selectedText = parentHeader.innerText;
+    
+    // שמירת האלמנטים שאחרי הכותרת עם התגים המקוריים
+    let nextSibling = parentHeader.nextElementSibling;
+    while (nextSibling && 
+      ['B', 'I', 'BIG', 'SMALL'].includes(nextSibling.tagName)) {
+      siblingElements.push(nextSibling.cloneNode(true));
+      nextSibling = nextSibling.nextElementSibling;
+    }
+    
+    parentHeader.remove();
+    range = sel.getRangeAt(0);
   } else {
-    // אחרת עוטפים
-    const headingElem = document.createElement(`h${level}`);
-    headingElem.innerHTML = inner;
-    range.insertNode(headingElem);
+    // אם לא מדובר בכותרת קיימת, פשוט מסירים את התוכן הנבחר
+    range.deleteContents();
   }
 
-  range.setStartAfter(range.endContainer);
-  range.setEndAfter(range.endContainer);
+  // הוספת \n לפני הכותרת
+  addNewlineBefore(range);
+
+  // יצירת אלמנט כותרת חדש עם הטקסט הטהור – ללא תגי עיטוף
+  const headingElem = document.createElement(`h${level}`);
+  headingElem.innerText = selectedText;
+  range.insertNode(headingElem);
+
+  // ניקוי כל ההורים שאולי עטופים בתגים לא רצויים 
+  cleanUpUnwantedAncestors(headingElem, ['b', 'i', 'big', 'small']);
+
+  // הסרת הורים מיותרים שעטפו את הטקסט לפני הכותרת
+  let parent = headingElem.parentNode;
+  while (parent && parent !== document.body) {
+    const unwantedTags = ['b', 'i', 'big', 'small'];
+    if (unwantedTags.includes(parent.tagName.toLowerCase())) {
+      const grandparent = parent.parentNode;
+      
+      // העברת כל התוכן שלפני הכותרת
+      let sibling = parent.previousSibling;
+      while (sibling) {
+        const prevSibling = sibling.previousSibling;
+        grandparent.insertBefore(sibling, parent);
+        sibling = prevSibling;
+      }
+      
+      // הסרת ההורה המיותר
+      parent.remove();
+    }
+    parent = parent.parentNode;
+  }
+
+  // הוספת האלמנטים ששמרנו חזרה אחרי הכותרת
+  siblingElements.forEach(elem => {
+    headingElem.parentNode.insertBefore(elem, headingElem.nextSibling);
+  });
+
+  // עדכון ה-selection לאחר הכותרת
+  range.setStartAfter(headingElem);
+  range.setEndAfter(headingElem);
   sel.removeAllRanges();
   sel.addRange(range);
 
   updateOutline();
+}
+
+/**
+ * cleanUpUnwantedAncestors:
+ * בודקת אם האלמנט שהוכנס (כותרת) עטוף בתגי b, big או small.
+ * אם כן – "מפשיטה" את ההורה (מעבירה את כל הילדים של ההורה לגבוה יותר)
+ * כך שהתוכן לא יהיה עטוף בתגים הלא רצויים.
+ */
+function cleanUpUnwantedAncestors(node, tags) {
+  let parent = node.parentNode;
+  while (parent && parent !== document.body) {
+    if (tags.includes(parent.tagName.toLowerCase())) {
+      const grandparent = parent.parentNode;
+      while (parent.firstChild) {
+        grandparent.insertBefore(parent.firstChild, parent);
+      }
+      parent.remove();
+      parent = node.parentNode;
+    } else {
+      break;
+    }
+  }
 }
 
 /** מוסיף \n לפני הכותרת, אם אין */
@@ -704,16 +996,109 @@ async function readFile() {
   updateOutline();
 }
 
-/** אירוע פתיחת קובץ - File System Access */
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("fileHandlesDB", 1);
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains("handles")) {
+        db.createObjectStore("handles");
+      }
+    };
+    request.onsuccess = (event) => resolve(event.target.result);
+    request.onerror = (event) => reject(event.target.error);
+  });
+}
+
+async function getStoredDirectoryHandle() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction("handles", "readonly");
+    const store = transaction.objectStore("handles");
+    const request = store.get("lastDirectory");
+    request.onsuccess = (event) => resolve(event.target.result);
+    request.onerror = (event) => reject(event.target.error);
+  });
+}
+
+async function storeDirectoryHandle(handle) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction("handles", "readwrite");
+    const store = transaction.objectStore("handles");
+    const request = store.put(handle, "lastDirectory");
+    request.onsuccess = () => resolve();
+    request.onerror = (event) => reject(event.target.error);
+  });
+}
+
+async function verifyPermission(handle) {
+  if (typeof handle.queryPermission === "function") {
+    const options = { mode: 'read' };
+    let permission = await handle.queryPermission(options);
+    if (permission !== 'granted') {
+      permission = await handle.requestPermission(options);
+    }
+    return permission === 'granted';
+  }
+  return true;
+}
+
+async function getStoredDirectoryHandle() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction("handles", "readonly");
+    const store = transaction.objectStore("handles");
+    const request = store.get("lastDirectory");
+    request.onsuccess = (event) => resolve(event.target.result);
+    request.onerror = (event) => reject(event.target.error);
+  });
+}
+
+async function storeDirectoryHandle(handle) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction("handles", "readwrite");
+    const store = transaction.objectStore("handles");
+    const request = store.put(handle, "lastDirectory");
+    request.onsuccess = () => resolve();
+    request.onerror = (event) => reject(event.target.error);
+  });
+}
+
 document.getElementById("openFileButton").addEventListener("click", async () => {
   try {
-    [fileHandle] = await window.showOpenFilePicker();
-    // הצגת שם הקובץ
-    const file = await fileHandle.getFile();
-    document.getElementById("fileNameSpan").textContent = file.name;
+    // ננסה לקבל את ה-directory handle ששמרנו מראש
+    let startDirectory = await getStoredDirectoryHandle();
+    if (startDirectory && await verifyPermission(startDirectory)) {
+      // אם יש תיקייה שמורה והיא מורשית – נעשה בה שימוש
+    } else {
+      // אין תיקייה שמורה או שאין הרשאה – נשתמש בתיקיית "downloads" כברירת מחדל
+      startDirectory = "downloads";
+    }
+    
+    // פתיחת קובץ עם startIn המוגדר לתיקייה שנבחרה
+    [fileHandle] = await window.showOpenFilePicker({
+      startIn: startDirectory,
+    });
 
-    await readFile(); // טוען את התוכן לעורך
+    // הצגת שם הקובץ וטעינת התוכן לעורך
+    const file = await fileHandle.getFile();
+    const fileNameWithoutExtension = file.name.split('.').slice(0, -1).join('.');
+    document.getElementById("fileNameSpan").textContent = fileNameWithoutExtension;
+    await readFile();
     document.getElementById("reloadFileButton").disabled = false;
+
+    // כאן אנו מעדכנים אוטומטית את תיקיית ברירת המחדל אם כבר נבחרה תיקייה בעבר
+    // (אם startDirectory אינו "downloads" – נניח שהמשתמש כבר בחר תיקייה מסוימת בעבר)
+    if (startDirectory !== "downloads") {
+      await storeDirectoryHandle(startDirectory);
+    }
+    
+    // לחלופין, אם תרצו לעדכן אוטומטית בכל פתיחה (גם אם התיקייה שמורה כבר),
+    // תוכלו לקרוא ל-storeDirectoryHandle(startDirectory) בכל פעם:
+    // await storeDirectoryHandle(startDirectory);
+    
   } catch (error) {
     console.error("Error opening file:", error);
   }
@@ -765,6 +1150,9 @@ function prettifyHTML(html) {
     html = html.replace(/<(b|i|big|small)\s*>\s*<\/\1>/gi, '');
   } while (html !== prev);
 
+  // מחיקת תגים ריקים (למשל <b></b>, <i></i>, <big></big>, <small></small>)
+  html = html.replace(/<(b|i|big|small)[^>]*>\s*<\/\1>/gi, '');
+
   // צמצום שורות ריקות
   html = html.replace(/\n\s*\n+/g, '\n');
 
@@ -795,11 +1183,23 @@ document.addEventListener('DOMContentLoaded', () => {
   updateOutline();
 });
 
-/* מיקום הסימן של ה-resizer במרכז */
-window.addEventListener("resize", () => {
-  const sidePanelWidth = sidePanel.offsetWidth;
-  resizer.style.right = (sidePanelWidth - 2) + "px";
-  mainCont.style.right = (sidePanelWidth + 10) + "px";
+function cleanupEditorContent() {
+  let editor = document.getElementById("editor");
+  let content = editor.innerHTML;
+  // מחיקת תגים ריקים
+  content = content.replace(/<(b|i|big|small)[^>]*>\s*<\/\1>/gi, '');
+  // מחיקת שורות ריקות
+  content = content.replace(/\n\s*\n+/g, '\n');
+  // עדכון העורך רק אם התוכן השתנה
+  if (content !== editor.innerHTML) {
+    editor.innerHTML = content;
+  }
+}
+
+let cleanupTimeout;
+document.getElementById("editor").addEventListener("input", function() {
+  clearTimeout(cleanupTimeout);
+  cleanupTimeout = setTimeout(cleanupEditorContent, 1); // דיליי של 500 מ״ש
 });
 </script>
 
